@@ -2,1009 +2,158 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
-  <title>みえる医療指示ボード</title>
-  <style>
-    :root {
-      --bg: #f3a53b;
-      --panel: rgba(255,255,255,0.72);
-      --panel-strong: rgba(255,255,255,0.84);
-      --text: #111111;
-      --sub: #333333;
-      --line: rgba(0,0,0,0.15);
-      --accent: #1f2937;
-      --chip: rgba(255,255,255,0.7);
-      --shadow: 0 10px 24px rgba(0,0,0,0.10);
-      --display-size: clamp(1.55rem, 3vw, 2.5rem);
-      --display-size-en: clamp(1rem, 1.6vw, 1.3rem);
-      --radius: 20px;
-      --font: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-    }
-
-    body.dark {
-      --bg: #6b6b6b;
-      --panel: rgba(70,70,70,0.82);
-      --panel-strong: rgba(58,58,58,0.9);
-      --text: #ffd95b;
-      --sub: #ffe88f;
-      --line: rgba(255,217,91,0.25);
-      --accent: #fff2a8;
-      --chip: rgba(90,90,90,0.9);
-      --shadow: 0 10px 24px rgba(0,0,0,0.28);
-    }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    body {
-      transition: background-color .25s ease, color .25s ease;
-    }
-
-    button, input, select, textarea {
-      font: inherit;
-    }
-
-    .app {
-      max-width: 1460px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-
-    .header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .titleBox {
-      background: var(--panel-strong);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      box-shadow: var(--shadow);
-    }
-
-    h1 {
-      margin: 0 0 8px 0;
-      font-size: clamp(1.5rem, 2.8vw, 2.3rem);
-      line-height: 1.2;
-    }
-
-    .lead {
-      margin: 0;
-      font-size: 0.98rem;
-      color: var(--sub);
-      line-height: 1.6;
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .btn {
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--panel-strong);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: transform .15s ease, background-color .2s ease, border-color .2s ease;
-    }
-
-    .btn:hover, .btn:focus-visible { transform: translateY(-1px); }
-    .btn:focus-visible, .chip:focus-visible, .phraseBtn:focus-visible, .catBtn:focus-visible {
-      outline: 3px solid rgba(37, 99, 235, 0.55);
-      outline-offset: 2px;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 290px minmax(0, 1fr) 320px;
-      gap: 16px;
-      align-items: start;
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 16px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
-    }
-
-    .sectionTitle {
-      margin: 0 0 10px 0;
-      font-size: 1rem;
-    }
-
-    .sectionNote {
-      margin: 0 0 12px 0;
-      color: var(--sub);
-      font-size: 0.92rem;
-      line-height: 1.6;
-    }
-
-    .searchBox {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .searchBox input, .textInput, .textarea {
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.72);
-      color: #111;
-      padding: 12px 14px;
-    }
-
-    body.dark .searchBox input,
-    body.dark .textInput,
-    body.dark .textarea {
-      background: rgba(255,255,255,0.12);
-      color: #fff6b8;
-    }
-
-    .categories {
-      display: grid;
-      gap: 8px;
-      max-height: min(72vh, 920px);
-      overflow: auto;
-      padding-right: 2px;
-    }
-
-    .catBtn {
-      text-align: left;
-      width: 100%;
-      border: 1px solid var(--line);
-      background: var(--chip);
-      color: var(--text);
-      border-radius: 16px;
-      padding: 12px 14px;
-      cursor: pointer;
-    }
-
-    .catBtn.active {
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent);
-      font-weight: 700;
-    }
-
-    .displayPanel {
-      display: grid;
-      gap: 16px;
-    }
-
-    .displayCard {
-      background: var(--panel-strong);
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 20px;
-      min-height: 310px;
-      box-shadow: var(--shadow);
-    }
-
-    .statusRow {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 7px 11px;
-      background: var(--chip);
-      color: var(--text);
-      cursor: pointer;
-    }
-
-    .chip.active {
-      font-weight: 700;
-      border-color: var(--accent);
-      box-shadow: inset 0 0 0 1px var(--accent);
-    }
-
-    .displayArea {
-      border: 1px dashed var(--line);
-      border-radius: 20px;
-      padding: 22px;
-      min-height: 210px;
-      display: grid;
-      align-content: start;
-      gap: 16px;
-    }
-
-    .displayLabel {
-      font-size: 0.92rem;
-      color: var(--sub);
-      margin: 0;
-    }
-
-    .displayMain {
-      margin: 0;
-      font-size: var(--display-size);
-      line-height: 1.5;
-      letter-spacing: 0.02em;
-      font-weight: 700;
-      word-break: keep-all;
-    }
-
-    .displayMain ruby {
-      ruby-position: over;
-    }
-
-    .displayMain rt {
-      font-size: 0.42em;
-      letter-spacing: 0;
-    }
-
-    .displayEn {
-      margin: 0;
-      font-size: var(--display-size-en);
-      color: var(--sub);
-      line-height: 1.7;
-    }
-
-    .displayMeta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .metaTag {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--chip);
-      border: 1px solid var(--line);
-      font-size: 0.86rem;
-    }
-
-    .phraseGrid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .phraseBtn {
-      text-align: left;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.72);
-      color: #111;
-      border-radius: 18px;
-      padding: 14px;
-      cursor: pointer;
-      min-height: 92px;
-    }
-
-    body.dark .phraseBtn {
-      background: rgba(255,255,255,0.10);
-      color: #fff2a8;
-    }
-
-    .phraseBtn small {
-      display: block;
-      opacity: 0.86;
-      margin-top: 6px;
-      line-height: 1.45;
-    }
-
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .rightCol {
-      display: grid;
-      gap: 16px;
-    }
-
-    .historyList {
-      display: grid;
-      gap: 8px;
-      max-height: 260px;
-      overflow: auto;
-    }
-
-    .historyItem {
-      width: 100%;
-      text-align: left;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--chip);
-      color: var(--text);
-      padding: 10px 12px;
-      cursor: pointer;
-    }
-
-    .mini {
-      margin-top: 4px;
-      display: block;
-      color: var(--sub);
-      font-size: 0.84rem;
-    }
-
-    .formGrid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .fieldLabel {
-      font-size: 0.92rem;
-      color: var(--sub);
-      margin-bottom: 4px;
-      display: block;
-    }
-
-    .textarea {
-      min-height: 92px;
-      resize: vertical;
-    }
-
-    .footerNote {
-      margin-top: 16px;
-      font-size: 0.9rem;
-      color: var(--sub);
-      line-height: 1.7;
-    }
-
-    .empty {
-      color: var(--sub);
-      font-size: 1rem;
-      line-height: 1.8;
-    }
-
-    .visually-hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    @media (max-width: 1120px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .categories {
-        max-height: none;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .header {
-        grid-template-columns: 1fr;
-      }
-
-      .actions {
-        justify-content: flex-start;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .app { padding: 12px; }
-      .panel, .displayCard, .titleBox { padding: 14px; }
-      .phraseGrid { grid-template-columns: 1fr; }
-      .categories { grid-template-columns: 1fr; }
-      .displayCard { min-height: 240px; }
-      .displayArea { min-height: 180px; padding: 16px; }
-      .btn, .chip, .catBtn, .phraseBtn, .historyItem { min-height: 44px; }
-    }
-
-    @media print {
-      .header, .leftCol, .rightCol, .toolbar, .statusRow + .toolbar {
-        display: none !important;
-      }
-
-      body, html {
-        background: #fff !important;
-        color: #000 !important;
-      }
-
-      .displayCard, .displayArea {
-        box-shadow: none;
-        border-color: #999;
-        background: #fff;
-      }
-    }
-  </style>
+  <meta name="description" content="文字を読む力が続かない子でも使いやすい、3つの質問だけで気持ちを伝えられる日本語Webページです。" />
+  <title>かんたん きもちカード</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <div class="titleBox">
-        <h1>みえる医療指示ボード</h1>
-        <p class="lead">病院・診療所で、医師・看護師が場面ごとの指示を選ぶと、患者さんに大きな文字とふりがなで見せられる静的ウェブページです。GitHub Pages に <strong>index.html</strong> として置くだけで動きます。</p>
-      </div>
-      <div class="actions">
-        <button class="btn" id="toggleThemeBtn" type="button">ダークモード切替</button>
-        <button class="btn" id="fullscreenBtn" type="button">表示を大きくする</button>
-        <button class="btn" id="copyBtn" type="button">表示文をコピー</button>
-        <button class="btn" id="clearBtn" type="button">表示を消す</button>
-      </div>
+  <main class="container">
+    <header class="hero">
+      <p class="eyebrow"><ruby>短<rt>みじか</rt></ruby>い <ruby>質問<rt>しつもん</rt></ruby>を 3つだけ</p>
+      <h1>かんたん きもちカード</h1>
+      <p class="lead">
+        <ruby>読<rt>よ</rt></ruby>むのが つかれる <ruby>子<rt>こ</rt></ruby>でも <ruby>使<rt>つか</rt></ruby>いやすいように、
+        <ruby>大事<rt>だいじ</rt></ruby>な <ruby>質問<rt>しつもん</rt></ruby>だけに しぼりました。
+        <ruby>文字<rt>もじ</rt></ruby>、ふりがな、やさしい <ruby>絵<rt>え</rt></ruby>で <ruby>選<rt>えら</rt></ruby>べます。
+      </p>
     </header>
 
-    <main class="layout">
-      <aside class="panel leftCol" aria-label="場面選択">
-        <h2 class="sectionTitle">1. 場面を選ぶ</h2>
-        <p class="sectionNote">検索でも絞り込めます。患者さんに伝えたい文を押すと、中央に大きく表示されます。</p>
-
-        <div class="searchBox">
-          <label for="searchInput" class="visually-hidden">検索</label>
-          <input id="searchInput" type="search" placeholder="例：採血、MRI、待ってください" />
-        </div>
-
-        <div class="categories" id="categoryList" role="list"></div>
-      </aside>
-
-      <section class="displayPanel" aria-label="患者表示">
-        <div class="displayCard">
-          <div class="statusRow">
-            <button type="button" class="chip active" data-size="normal">標準サイズ</button>
-            <button type="button" class="chip" data-size="large">大きめ</button>
-            <button type="button" class="chip" data-size="xlarge">最大</button>
-            <button type="button" class="chip active" data-lang="both">日英表示</button>
-            <button type="button" class="chip" data-lang="ja">日本語のみ</button>
-          </div>
-
-          <div class="displayArea" aria-live="polite" aria-atomic="true">
-            <p class="displayLabel">患者さんに見せる画面</p>
-            <div id="displayContent" class="empty">左や下の文を選ぶと、ここに大きく表示されます。<br>わからないときに備えて、短く、具体的で、ひとつずつ伝える設計です。</div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h2 class="sectionTitle">2. 指示を選ぶ</h2>
-          <p class="sectionNote" id="currentCategoryNote">カテゴリーを選択してください。</p>
-          <div class="phraseGrid" id="phraseGrid"></div>
-        </div>
+    <form id="simpleForm" class="stack" autocomplete="off">
+      <section class="panel">
+        <h2>1. いまの <ruby>気持<rt>きも</rt></ruby>ちは？</h2>
+        <p class="hint">いちばん ちかい ものを 1つ <ruby>選<rt>えら</rt></ruby>んでください。</p>
+        <div class="choice-grid" id="emotionChoices"></div>
       </section>
 
-      <aside class="rightCol" aria-label="補助機能">
-        <section class="panel">
-          <h2 class="sectionTitle">よく使う補助文</h2>
-          <div class="toolbar" id="quickActions"></div>
-        </section>
+      <section class="panel">
+        <h2>2. いま いちばん <ruby>困<rt>こま</rt></ruby>っていることは？</h2>
+        <p class="hint">いま つらいことを 1つ <ruby>選<rt>えら</rt></ruby>んでください。</p>
+        <div class="choice-grid" id="problemChoices"></div>
+      </section>
 
-        <section class="panel">
-          <h2 class="sectionTitle">最近使った文</h2>
-          <div class="historyList" id="historyList"></div>
-        </section>
+      <section class="panel">
+        <h2>3. どうしてほしい？</h2>
+        <p class="hint">してほしいことを 1つ <ruby>選<rt>えら</rt></ruby>んでください。</p>
+        <div class="choice-grid" id="supportChoices"></div>
+      </section>
 
-        <section class="panel">
-          <h2 class="sectionTitle">自由入力</h2>
-          <p class="sectionNote">定型文にない指示も、その場で大きく表示できます。</p>
-          <div class="formGrid">
-            <div>
-              <label for="customJa" class="fieldLabel">日本語</label>
-              <textarea id="customJa" class="textarea" placeholder="例：今からおなかを押して診ます。痛ければ手を上げてください。"></textarea>
-            </div>
-            <div>
-              <label for="customFuri" class="fieldLabel">ふりがな（任意）</label>
-              <input id="customFuri" class="textInput" type="text" placeholder="例：いまからおなかをおしてみます。いたければてをあげてください。" />
-            </div>
-            <div>
-              <label for="customEn" class="fieldLabel">英語（任意）</label>
-              <textarea id="customEn" class="textarea" placeholder="例：I will press your abdomen now. Please raise your hand if it hurts."></textarea>
-            </div>
-            <button class="btn" id="showCustomBtn" type="button">自由入力を表示</button>
-          </div>
-        </section>
+      <section class="panel">
+        <h2>みせる <ruby>文章<rt>ぶんしょう</rt></ruby></h2>
+        <p class="hint"><ruby>選<rt>えら</rt></ruby>ぶと <ruby>自動<rt>じどう</rt></ruby>で <ruby>文章<rt>ぶんしょう</rt></ruby>が できます。</p>
+        <textarea id="outputText" rows="6" aria-label="作成された文章"></textarea>
+        <div class="button-row">
+          <button type="button" id="copyBtn">コピー</button>
+          <button type="button" id="pdfBtn">PDF<ruby>保存<rt>ほぞん</rt></ruby></button>
+          <button type="button" id="resetBtn" class="secondary">リセット</button>
+        </div>
+        <p id="status" class="status" aria-live="polite"></p>
+      </section>
+    </form>
 
-        <section class="panel">
-          <h2 class="sectionTitle">使い方の注意</h2>
-          <p class="sectionNote">このページは患者説明の補助用です。診断、同意取得、重要説明は、必要に応じて手話通訳・筆談・通訳機器・説明文書と併用してください。</p>
-          <div class="footerNote">
-            設計の考え方：<br>
-            ・短く、場面別に、確認しながら伝える<br>
-            ・視覚情報を優先する<br>
-            ・患者ごとの好み（日本語のみ／英語併記、文字サイズ）に合わせる<br>
-            ・静的HTMLなので、個人情報を送信しない
-          </div>
-        </section>
-      </aside>
-    </main>
-  </div>
+    <section class="panel small">
+      <h2><ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby></h2>
+      <ol class="steps">
+        <li>きもちを 1つ <ruby>選<rt>えら</rt></ruby>ぶ</li>
+        <li><ruby>困<rt>こま</rt></ruby>っていることを 1つ <ruby>選<rt>えら</rt></ruby>ぶ</li>
+        <li>してほしいことを 1つ <ruby>選<rt>えら</rt></ruby>ぶ</li>
+      </ol>
+    </section>
+  </main>
 
   <script>
-    const categories = [
-      {
-        id: 'reception',
-        name: '受付・待合',
-        note: '受付、待機、呼び出し前後で使う短い文です。',
-        phrases: [
-          {
-            plainJa: '受付をします。保険証を見せてください。',
-            rubyJa: '<ruby>受付<rt>うけつけ</rt></ruby>をします。<ruby>保険証<rt>ほけんしょう</rt></ruby>を<ruby>見<rt>み</rt></ruby>せてください。',
-            en: 'We will check you in. Please show your insurance card.',
-            tags: ['受付', '保険証']
-          },
-          {
-            plainJa: 'こちらで少し待ってください。',
-            rubyJa: 'こちらで<ruby>少<rt>すこ</rt></ruby>し<ruby>待<rt>ま</rt></ruby>ってください。',
-            en: 'Please wait here for a moment.',
-            tags: ['待つ', '待合']
-          },
-          {
-            plainJa: '順番が来たら画面か合図で知らせます。',
-            rubyJa: '<ruby>順番<rt>じゅんばん</rt></ruby>が<ruby>来<rt>き</rt></ruby>たら<ruby>画面<rt>がめん</rt></ruby>か<ruby>合図<rt>あいず</rt></ruby>で<ruby>知<rt>し</rt></ruby>らせます。',
-            en: 'When it is your turn, we will notify you by screen or visual signal.',
-            tags: ['順番', '呼び出し']
-          },
-          {
-            plainJa: 'わからないときは、この画面を指さしてください。',
-            rubyJa: 'わからないときは、この<ruby>画面<rt>がめん</rt></ruby>を<ruby>指<rt>ゆび</rt></ruby>さしてください。',
-            en: 'If anything is unclear, please point to this screen.',
-            tags: ['指さし', '確認']
-          },
-          {
-            plainJa: '名前を確認します。生年月日も教えてください。',
-            rubyJa: '<ruby>名前<rt>なまえ</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>します。<ruby>生年月日<rt>せいねんがっぴ</rt></ruby>も<ruby>教<rt>おし</rt></ruby>えてください。',
-            en: 'We will confirm your name. Please also tell us your date of birth.',
-            tags: ['本人確認', '名前']
-          }
-        ]
-      },
-      {
-        id: 'exam',
-        name: '診察・問診',
-        note: '問診や診察中の基本指示です。',
-        phrases: [
-          {
-            plainJa: '今から診察を始めます。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>から<ruby>診察<rt>しんさつ</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めます。',
-            en: 'We will begin the examination now.',
-            tags: ['診察開始']
-          },
-          {
-            plainJa: '症状がある場所を指で示してください。',
-            rubyJa: '<ruby>症状<rt>しょうじょう</rt></ruby>がある<ruby>場所<rt>ばしょ</rt></ruby>を<ruby>指<rt>ゆび</rt></ruby>で<ruby>示<rt>しめ</rt></ruby>してください。',
-            en: 'Please point to where you have symptoms.',
-            tags: ['症状', '指さし']
-          },
-          {
-            plainJa: '痛いところがありますか。',
-            rubyJa: '<ruby>痛<rt>いた</rt></ruby>いところがありますか。',
-            en: 'Do you have any pain?',
-            tags: ['痛み']
-          },
-          {
-            plainJa: '息を大きく吸って、ゆっくり吐いてください。',
-            rubyJa: '<ruby>息<rt>いき</rt></ruby>を<ruby>大<rt>おお</rt></ruby>きく<ruby>吸<rt>す</rt></ruby>って、ゆっくり<ruby>吐<rt>は</rt></ruby>いてください。',
-            en: 'Take a deep breath in, then breathe out slowly.',
-            tags: ['呼吸']
-          },
-          {
-            plainJa: '口を開けてください。',
-            rubyJa: '<ruby>口<rt>くち</rt></ruby>を<ruby>開<rt>あ</rt></ruby>けてください。',
-            en: 'Please open your mouth.',
-            tags: ['口']
-          },
-          {
-            plainJa: '今からおなかを押して診ます。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>からおなかを<ruby>押<rt>お</rt></ruby>して<ruby>診<rt>み</rt></ruby>ます。',
-            en: 'I will press your abdomen now.',
-            tags: ['腹部', '診察']
-          }
-        ]
-      },
-      {
-        id: 'vital',
-        name: '体温・血圧・酸素',
-        note: 'バイタル測定時に使います。',
-        phrases: [
-          {
-            plainJa: '体温を測ります。',
-            rubyJa: '<ruby>体温<rt>たいおん</rt></ruby>を<ruby>測<rt>はか</rt></ruby>ります。',
-            en: 'We will check your temperature.',
-            tags: ['体温']
-          },
-          {
-            plainJa: '血圧を測ります。腕を出してください。',
-            rubyJa: '<ruby>血圧<rt>けつあつ</rt></ruby>を<ruby>測<rt>はか</rt></ruby>ります。<ruby>腕<rt>うで</rt></ruby>を<ruby>出<rt>だ</rt></ruby>してください。',
-            en: 'We will measure your blood pressure. Please hold out your arm.',
-            tags: ['血圧', '腕']
-          },
-          {
-            plainJa: '動かないでください。',
-            rubyJa: '<ruby>動<rt>うご</rt></ruby>かないでください。',
-            en: 'Please stay still.',
-            tags: ['動かない']
-          },
-          {
-            plainJa: '指にはさむ機械で酸素を測ります。',
-            rubyJa: '<ruby>指<rt>ゆび</rt></ruby>にはさむ<ruby>機械<rt>きかい</rt></ruby>で<ruby>酸素<rt>さんそ</rt></ruby>を<ruby>測<rt>はか</rt></ruby>ります。',
-            en: 'We will check your oxygen level with a clip on your finger.',
-            tags: ['酸素', '指']
-          },
-          {
-            plainJa: '数値を確認しています。少し待ってください。',
-            rubyJa: '<ruby>数値<rt>すうち</rt></ruby>を<ruby>確認<rt>かくにん</rt></ruby>しています。<ruby>少<rt>すこ</rt></ruby>し<ruby>待<rt>ま</rt></ruby>ってください。',
-            en: 'We are checking the readings. Please wait a moment.',
-            tags: ['確認', '待つ']
-          }
-        ]
-      },
-      {
-        id: 'blood',
-        name: '採血・注射・点滴',
-        note: '処置の前後に、何をするかを短く明示します。',
-        phrases: [
-          {
-            plainJa: '今から採血をします。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>から<ruby>採血<rt>さいけつ</rt></ruby>をします。',
-            en: 'We are going to take a blood sample now.',
-            tags: ['採血']
-          },
-          {
-            plainJa: '腕をまっすぐにしてください。',
-            rubyJa: '<ruby>腕<rt>うで</rt></ruby>をまっすぐにしてください。',
-            en: 'Please keep your arm straight.',
-            tags: ['腕']
-          },
-          {
-            plainJa: '少しチクッとします。',
-            rubyJa: '<ruby>少<rt>すこ</rt></ruby>しチクッとします。',
-            en: 'You may feel a small prick.',
-            tags: ['痛み', '注射']
-          },
-          {
-            plainJa: '終わるまで動かないでください。',
-            rubyJa: '<ruby>終<rt>お</rt></ruby>わるまで<ruby>動<rt>うご</rt></ruby>かないでください。',
-            en: 'Please stay still until we finish.',
-            tags: ['動かない']
-          },
-          {
-            plainJa: '終わりました。ここを5分押さえてください。',
-            rubyJa: '<ruby>終<rt>お</rt></ruby>わりました。ここを5<ruby>分<rt>ふん</rt></ruby><ruby>押<rt>お</rt></ruby>さえてください。',
-            en: 'We are done. Please press here for 5 minutes.',
-            tags: ['終了', '押さえる']
-          },
-          {
-            plainJa: '今から点滴を始めます。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>から<ruby>点滴<rt>てんてき</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>めます。',
-            en: 'We are starting the IV drip now.',
-            tags: ['点滴']
-          }
-        ]
-      },
-      {
-        id: 'imaging',
-        name: 'レントゲン・CT・MRI',
-        note: '撮影中は「動かない」「息を止める」などを明確に出します。',
-        phrases: [
-          {
-            plainJa: '今からレントゲンを撮ります。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>からレントゲンを<ruby>撮<rt>と</rt></ruby>ります。',
-            en: 'We are taking an X-ray now.',
-            tags: ['レントゲン']
-          },
-          {
-            plainJa: '今からCTを撮ります。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>からCTを<ruby>撮<rt>と</rt></ruby>ります。',
-            en: 'We are taking a CT scan now.',
-            tags: ['CT']
-          },
-          {
-            plainJa: '今からMRIを始めます。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>からMRIを<ruby>始<rt>はじ</rt></ruby>めます。',
-            en: 'We are starting the MRI now.',
-            tags: ['MRI']
-          },
-          {
-            plainJa: '検査中は動かないでください。',
-            rubyJa: '<ruby>検査中<rt>けんさちゅう</rt></ruby>は<ruby>動<rt>うご</rt></ruby>かないでください。',
-            en: 'Please do not move during the scan.',
-            tags: ['検査', '動かない']
-          },
-          {
-            plainJa: '今、息を止めてください。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>、<ruby>息<rt>いき</rt></ruby>を<ruby>止<rt>と</rt></ruby>めてください。',
-            en: 'Please hold your breath now.',
-            tags: ['息止め']
-          },
-          {
-            plainJa: 'もう一度、息を止めてください。',
-            rubyJa: 'もう<ruby>一度<rt>いちど</rt></ruby>、<ruby>息<rt>いき</rt></ruby>を<ruby>止<rt>と</rt></ruby>めてください。',
-            en: 'Please hold your breath again.',
-            tags: ['息止め']
-          },
-          {
-            plainJa: 'あと2分です。もう少しで終わります。',
-            rubyJa: 'あと2<ruby>分<rt>ふん</rt></ruby>です。もう<ruby>少<rt>すこ</rt></ruby>しで<ruby>終<rt>お</rt></ruby>わります。',
-            en: '2 minutes left. We are almost done.',
-            tags: ['時間', '終了']
-          },
-          {
-            plainJa: '検査が終わりました。',
-            rubyJa: '<ruby>検査<rt>けんさ</rt></ruby>が<ruby>終<rt>お</rt></ruby>わりました。',
-            en: 'The scan is finished.',
-            tags: ['検査終了']
-          }
-        ]
-      },
-      {
-        id: 'movement',
-        name: '移動・更衣・トイレ',
-        note: '着替えや移動の手順を明示します。',
-        phrases: [
-          {
-            plainJa: 'こちらへ移動してください。',
-            rubyJa: 'こちらへ<ruby>移動<rt>いどう</rt></ruby>してください。',
-            en: 'Please move over here.',
-            tags: ['移動']
-          },
-          {
-            plainJa: 'ベッドに座ってください。',
-            rubyJa: 'ベッドに<ruby>座<rt>すわ</rt></ruby>ってください。',
-            en: 'Please sit on the bed.',
-            tags: ['座る']
-          },
-          {
-            plainJa: '横になってください。',
-            rubyJa: '<ruby>横<rt>よこ</rt></ruby>になってください。',
-            en: 'Please lie down.',
-            tags: ['横になる']
-          },
-          {
-            plainJa: '服をここまで上げてください。',
-            rubyJa: '<ruby>服<rt>ふく</rt></ruby>をここまで<ruby>上<rt>あ</rt></ruby>げてください。',
-            en: 'Please lift your clothing up to here.',
-            tags: ['服']
-          },
-          {
-            plainJa: '更衣室で着替えてください。',
-            rubyJa: '<ruby>更衣室<rt>こういしつ</rt></ruby>で<ruby>着替<rt>きが</rt></ruby>えてください。',
-            en: 'Please change clothes in the changing room.',
-            tags: ['着替え']
-          },
-          {
-            plainJa: 'トイレに行く前に声か画面で知らせてください。',
-            rubyJa: 'トイレに<ruby>行<rt>い</rt></ruby>く<ruby>前<rt>まえ</rt></ruby>に<ruby>声<rt>こえ</rt></ruby>か<ruby>画面<rt>がめん</rt></ruby>で<ruby>知<rt>し</rt></ruby>らせてください。',
-            en: 'Please let us know before going to the restroom.',
-            tags: ['トイレ']
-          }
-        ]
-      },
-      {
-        id: 'admission',
-        name: '入院・病室',
-        note: '病室での案内やお願いです。',
-        phrases: [
-          {
-            plainJa: 'これから病室に案内します。',
-            rubyJa: 'これから<ruby>病室<rt>びょうしつ</rt></ruby>に<ruby>案内<rt>あんない</rt></ruby>します。',
-            en: 'We will take you to your room now.',
-            tags: ['病室']
-          },
-          {
-            plainJa: '何かあればナースコールを押してください。',
-            rubyJa: '<ruby>何<rt>なに</rt></ruby>かあればナースコールを<ruby>押<rt>お</rt></ruby>してください。',
-            en: 'If you need anything, please press the nurse call button.',
-            tags: ['ナースコール']
-          },
-          {
-            plainJa: '食事の時間です。',
-            rubyJa: '<ruby>食事<rt>しょくじ</rt></ruby>の<ruby>時間<rt>じかん</rt></ruby>です。',
-            en: 'It is mealtime.',
-            tags: ['食事']
-          },
-          {
-            plainJa: '今から薬を持ってきます。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>から<ruby>薬<rt>くすり</rt></ruby>を<ruby>持<rt>も</rt></ruby>ってきます。',
-            en: 'We will bring your medicine now.',
-            tags: ['薬']
-          },
-          {
-            plainJa: '安静にしてください。',
-            rubyJa: '<ruby>安静<rt>あんせい</rt></ruby>にしてください。',
-            en: 'Please rest and stay calm.',
-            tags: ['安静']
-          },
-          {
-            plainJa: '付き添いの人に説明します。よければ一緒に見てください。',
-            rubyJa: '<ruby>付<rt>つ</rt></ruby>き<ruby>添<rt>そ</rt></ruby>いの<ruby>人<rt>ひと</rt></ruby>に<ruby>説明<rt>せつめい</rt></ruby>します。よければ<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>見<rt>み</rt></ruby>てください。',
-            en: 'We will explain this to your accompanying person as well. Please watch together if you wish.',
-            tags: ['説明', '付き添い']
-          }
-        ]
-      },
-      {
-        id: 'meds',
-        name: '服薬・説明',
-        note: '薬の飲み方や説明確認に使います。',
-        phrases: [
-          {
-            plainJa: 'この薬は今飲んでください。',
-            rubyJa: 'この<ruby>薬<rt>くすり</rt></ruby>は<ruby>今<rt>いま</rt></ruby><ruby>飲<rt>の</rt></ruby>んでください。',
-            en: 'Please take this medicine now.',
-            tags: ['薬']
-          },
-          {
-            plainJa: '食後に飲んでください。',
-            rubyJa: '<ruby>食後<rt>しょくご</rt></ruby>に<ruby>飲<rt>の</rt></ruby>んでください。',
-            en: 'Please take it after meals.',
-            tags: ['食後']
-          },
-          {
-            plainJa: '1日2回飲んでください。',
-            rubyJa: '1<ruby>日<rt>にち</rt></ruby>2<ruby>回<rt>かい</rt></ruby><ruby>飲<rt>の</rt></ruby>んでください。',
-            en: 'Please take it twice a day.',
-            tags: ['回数']
-          },
-          {
-            plainJa: 'この説明書を持ち帰ってください。',
-            rubyJa: 'この<ruby>説明書<rt>せつめいしょ</rt></ruby>を<ruby>持<rt>も</rt></ruby>ち<ruby>帰<rt>かえ</rt></ruby>ってください。',
-            en: 'Please take this instruction sheet home.',
-            tags: ['説明書']
-          },
-          {
-            plainJa: 'わかったら、うなずくか指さしで知らせてください。',
-            rubyJa: 'わかったら、うなずくか<ruby>指<rt>ゆび</rt></ruby>さしで<ruby>知<rt>し</rt></ruby>らせてください。',
-            en: 'If you understand, please nod or point to let us know.',
-            tags: ['理解確認']
-          }
-        ]
-      },
-      {
-        id: 'discharge',
-        name: '会計・次回予約・帰宅',
-        note: '診察後の案内です。',
-        phrases: [
-          {
-            plainJa: '診察は終わりました。',
-            rubyJa: '<ruby>診察<rt>しんさつ</rt></ruby>は<ruby>終<rt>お</rt></ruby>わりました。',
-            en: 'Your examination is finished.',
-            tags: ['終了']
-          },
-          {
-            plainJa: '会計へ進んでください。',
-            rubyJa: '<ruby>会計<rt>かいけい</rt></ruby>へ<ruby>進<rt>すす</rt></ruby>んでください。',
-            en: 'Please proceed to payment.',
-            tags: ['会計']
-          },
-          {
-            plainJa: '次回の予約を取ります。',
-            rubyJa: '<ruby>次回<rt>じかい</rt></ruby>の<ruby>予約<rt>よやく</rt></ruby>を<ruby>取<rt>と</rt></ruby>ります。',
-            en: 'We will make your next appointment.',
-            tags: ['予約']
-          },
-          {
-            plainJa: '帰宅して大丈夫です。',
-            rubyJa: '<ruby>帰宅<rt>きたく</rt></ruby>して<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>です。',
-            en: 'It is okay for you to go home.',
-            tags: ['帰宅']
-          },
-          {
-            plainJa: '気分が悪くなったら、すぐ連絡してください。',
-            rubyJa: '<ruby>気分<rt>きぶん</rt></ruby>が<ruby>悪<rt>わる</rt></ruby>くなったら、すぐ<ruby>連絡<rt>れんらく</rt></ruby>してください。',
-            en: 'If you feel unwell, please contact us right away.',
-            tags: ['連絡', '注意']
-          }
-        ]
-      },
-      {
-        id: 'emergency',
-        name: '安全・緊急',
-        note: '緊急時でも短く、明確に出せる文です。',
-        phrases: [
-          {
-            plainJa: '危ないので、今は動かないでください。',
-            rubyJa: '<ruby>危<rt>あぶ</rt></ruby>ないので、<ruby>今<rt>いま</rt></ruby>は<ruby>動<rt>うご</rt></ruby>かないでください。',
-            en: 'For safety, please do not move right now.',
-            tags: ['安全', '動かない']
-          },
-          {
-            plainJa: 'すぐに医師を呼びます。',
-            rubyJa: 'すぐに<ruby>医師<rt>いし</rt></ruby>を<ruby>呼<rt>よ</rt></ruby>びます。',
-            en: 'We are calling the doctor immediately.',
-            tags: ['医師']
-          },
-          {
-            plainJa: '苦しいですか。痛いですか。指で教えてください。',
-            rubyJa: '<ruby>苦<rt>くる</rt></ruby>しいですか。<ruby>痛<rt>いた</rt></ruby>いですか。<ruby>指<rt>ゆび</rt></ruby>で<ruby>教<rt>おし</rt></ruby>えてください。',
-            en: 'Are you short of breath? Are you in pain? Please show us with your finger.',
-            tags: ['確認', '痛み']
-          },
-          {
-            plainJa: '大丈夫です。そばにいます。',
-            rubyJa: '<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>です。そばにいます。',
-            en: 'You are safe. We are here with you.',
-            tags: ['安心']
-          },
-          {
-            plainJa: '今は食べたり飲んだりしないでください。',
-            rubyJa: '<ruby>今<rt>いま</rt></ruby>は<ruby>食<rt>た</rt></ruby>べたり<ruby>飲<rt>の</rt></ruby>んだりしないでください。',
-            en: 'Please do not eat or drink right now.',
-            tags: ['絶食']
-          }
-        ]
+    const icon = {
+      calm: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="18" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="25" cy="27" r="2.2" fill="#111"/><circle cx="39" cy="27" r="2.2" fill="#111"/><path d="M24 36c2.8 3 13.2 3 16 0" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M18 18c2-6 7-9 14-9 7 0 12 3 14 9" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      sad: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="18" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="25" cy="27" r="2.2" fill="#111"/><circle cx="39" cy="27" r="2.2" fill="#111"/><path d="M24 39c2.8-3 13.2-3 16 0" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M45 33c3 2 3 6 0 8" fill="#7cc7ff" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg>`,
+      angry: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="18" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M21 25l7-3" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M36 22l7 3" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><circle cx="25" cy="28" r="2.2" fill="#111"/><circle cx="39" cy="28" r="2.2" fill="#111"/><path d="M24 39c3-1.6 13-1.6 16 0" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M49 15l3 3m0-3l-3 3" stroke="#ff8a65" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      confused: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="18" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="25" cy="27" r="2.2" fill="#111"/><circle cx="39" cy="27" r="2.2" fill="#111"/><path d="M24 36c2-2 5 2 8 0s6-2 8 0" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M46 14c4 0 6 2 6 5 0 4-4 4-4 7" fill="none" stroke="#6aa9ff" stroke-width="2.5" stroke-linecap="round"/><circle cx="48" cy="29" r="1.6" fill="#6aa9ff"/></svg>`,
+      noise: `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M23 24c5-7 10-10 15-10v36c-5 0-10-3-15-10h-7V24h7z" fill="#fff5dc" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/><path d="M43 23c4 3 6 7 6 9s-2 6-6 9" fill="none" stroke="#ff8a65" stroke-width="2.5" stroke-linecap="round"/><path d="M49 18c6 4 9 9 9 14s-3 10-9 14" fill="none" stroke="#ff8a65" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      light: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="28" r="13" fill="#fff2a8" stroke="#111" stroke-width="2.5"/><path d="M27 41h10v8H27z" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M32 7v6M16 13l4 4M10 28h6M48 17l4-4M48 28h6" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      crowd: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="18" cy="23" r="7" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="32" cy="18" r="8" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="47" cy="23" r="7" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M10 44c1-7 5-11 12-11s11 4 12 11" fill="#dff5d8" stroke="#111" stroke-width="2.5"/><path d="M21 49c1-9 6-14 11-14 7 0 12 5 13 14" fill="#cdeaff" stroke="#111" stroke-width="2.5"/><path d="M34 44c1-7 5-11 12-11s11 4 12 11" fill="#ffd9d0" stroke="#111" stroke-width="2.5"/></svg>`,
+      schedule: `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="14" y="15" width="36" height="36" rx="5" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M14 24h36" stroke="#111" stroke-width="2.5"/><path d="M23 10v10M41 10v10" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M24 33h6M34 33h6M24 41h16" stroke="#6aa9ff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      write: `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="14" y="12" width="30" height="40" rx="4" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M21 24h16M21 32h16M21 40h10" stroke="#111" stroke-width="2.5" stroke-linecap="round"/><path d="M44 40l9-9 4 4-9 9-6 2z" fill="#ffd9d0" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/></svg>`,
+      quiet: `<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 49V27l16-11 16 11v22H16z" fill="#fff5dc" stroke="#111" stroke-width="2.5" stroke-linejoin="round"/><path d="M28 49V35h8v14" fill="#dff5d8" stroke="#111" stroke-width="2.5"/><path d="M50 15c-3 2-4 6-3 9" fill="none" stroke="#6aa9ff" stroke-width="2.5" stroke-linecap="round"/><path d="M54 13c-4 4-5 9-3 13" fill="none" stroke="#6aa9ff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      wait: `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="18" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><path d="M32 21v12l8 5" stroke="#111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 15l4 4M45 45l4 4" stroke="#6aa9ff" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+      choice: `<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="11" y="14" width="42" height="36" rx="5" fill="#fff5dc" stroke="#111" stroke-width="2.5"/><circle cx="21" cy="27" r="3" fill="#6aa9ff" stroke="#111" stroke-width="2"/><circle cx="21" cy="40" r="3" fill="#dff5d8" stroke="#111" stroke-width="2"/><path d="M29 27h14M29 40h14" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>`
+    };
+
+    const DATA = {
+      emotion: [
+        { id: 'calm', value: 'おちついている', html: 'おちついている', visual: icon.calm },
+        { id: 'sad', value: 'かなしい', html: 'かなしい', visual: icon.sad },
+        { id: 'angry', value: 'いらいら', html: 'いらいら', visual: icon.angry },
+        { id: 'confused', value: 'こまっている', html: 'こまっている', visual: icon.confused }
+      ],
+      problem: [
+        { id: 'noise', value: 'おと が つらい', html: '<ruby>音<rt>おと</rt></ruby>が つらい', visual: icon.noise },
+        { id: 'light', value: 'ひかり が つらい', html: '<ruby>光<rt>ひかり</rt></ruby>が つらい', visual: icon.light },
+        { id: 'crowd', value: 'ひと が おおい', html: '<ruby>人<rt>ひと</rt></ruby>が おおい', visual: icon.crowd },
+        { id: 'schedule', value: 'よてい が わからない', html: '<ruby>予定<rt>よてい</rt></ruby>が わからない', visual: icon.schedule }
+      ],
+      support: [
+        { id: 'write', value: 'かいて せつめいして ほしい', html: 'かいて <ruby>説明<rt>せつめい</rt></ruby>して ほしい', visual: icon.write },
+        { id: 'quiet', value: 'しずかな ばしょ に いきたい', html: 'しずかな ばしょに <ruby>行<rt>い</rt></ruby>きたい', visual: icon.quiet },
+        { id: 'wait', value: 'すこし まって ほしい', html: 'すこし <ruby>待<rt>ま</rt></ruby>って ほしい', visual: icon.wait },
+        { id: 'choice', value: 'えらべる かたちで きいて ほしい', html: '<ruby>選<rt>えら</rt></ruby>べる かたちで <ruby>聞<rt>き</rt></ruby>いて ほしい', visual: icon.choice }
+      ]
+    };
+
+    const outputText = document.getElementById('outputText');
+    const statusText = document.getElementById('status');
+    const form = document.getElementById('simpleForm');
+
+    function renderChoices(groupId, items, name) {
+      const root = document.getElementById(groupId);
+      root.innerHTML = items.map(item => `
+        <label class="choice-card">
+          <input type="radio" name="${name}" value="${item.value}" data-id="${item.id}" />
+          <span class="card-visual">${item.visual}</span>
+          <span class="choice-label">${item.html}</span>
+        </label>
+      `).join('');
+    }
+
+    function getSelected(name) {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : '';
+    }
+
+    function buildMessage() {
+      const emotion = getSelected('emotion');
+      const problem = getSelected('problem');
+      const support = getSelected('support');
+
+      const parts = [];
+      if (emotion) parts.push(`いま、${emotion}です。`);
+      if (problem) parts.push(`いちばん こまっていることは、${problem}です。`);
+      if (support) parts.push(`${support}。`);
+      return parts.join(' ');
+    }
+
+    function updateOutput() {
+      outputText.value = buildMessage();
+    }
+
+    function setStatus(message = '') {
+      statusText.textContent = message;
+    }
+
+    function resetForm(showStatus = true) {
+      form.reset();
+      outputText.value = '';
+      updateOutput();
+      if (showStatus) setStatus('リセットしました。');
+      else setStatus('');
+    }
+
+    async function copyOutput() {
+      try {
+        await navigator.clipboard.writeText(outputText.value);
+        setStatus('コピーしました。');
+      } catch {
+        setStatus('コピーできませんでした。');
       }
-    ];
-
-    const quickPhrases = [
-      {
-        plainJa: '少し待ってください。',
-        rubyJa: '<ruby>少<rt>すこ</rt></ruby>し<ruby>待<rt>ま</rt></ruby>ってください。',
-        en: 'Please wait a moment.',
-        tags: ['待つ']
-      },
-      {
-        plainJa: '動かないでください。',
-        rubyJa: '<ruby>動<rt>うご</rt></ruby>かないでください。',
-        en: 'Please stay still.',
-        tags: ['動かない']
-      },
-      {
-        plainJa: '終わりました。',
-        rubyJa: '<ruby>終<rt>お</rt></ruby>わりました。',
-        en: 'We are finished.',
-        tags: ['終了']
-      },
-      {
-        plainJa: 'わからないときは指で示してください。',
-        rubyJa: 'わからないときは<ruby>指<rt>ゆび</rt></ruby>で<ruby>示<rt>しめ</rt></ruby>してください。',
-        en: 'If it is unclear, please point with your finger.',
-        tags: ['確認']
-      },
-      {
-        plainJa: '痛ければ手を上げてください。',
-        rubyJa: '<ruby>痛<rt>いた</rt></ruby>ければ<ruby>手<rt>て</rt></ruby>を<ruby>上<rt>あ</rt></ruby>げてください。',
-        en: 'Please raise your hand if it hurts.',
-        tags: ['痛み']
-      }
-    ];
-
-    const categoryList = document.getElementById('categoryList');
-    const phraseGrid = document.getElementById('phraseGrid');
-    const currentCategoryNote = document.getElementById('currentCategoryNote');
-    const displayContent = document.getElementById('displayContent');
-    const historyList = document.getElementById('historyList');
-    const searchInput = document.getElementById('searchInput');
-    const quickActions = document.getElementById('quickActions');
-    const toggleThemeBtn = document.getElementById('toggleThemeBtn');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const showCustomBtn = document.getElementById('showCustomBtn');
-    const customJa = document.getElementById('customJa');
-    const customFuri = document.getElementById('customFuri');
-    const customEn = document.getElementById('customEn');
-
-    let selectedCategory = categories[0].id;
-    let displayLang = 'both';
-    let history = [];
-
-    const savedTheme = localStorage.getItem('medical-board-theme');
-    if (savedTheme === 'dark') document.body.classList.add('dark');
-    else if (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches) document.body.classList.add('dark');
-
-    function saveTheme() {
-      localStorage.setItem('medical-board-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
     }
 
     function escapeHtml(text) {
@@ -1016,206 +165,50 @@
         .replaceAll("'", '&#39;');
     }
 
-    function plainToRuby(plain, reading) {
-      if (!reading || !reading.trim()) return escapeHtml(plain);
-      return `<ruby>${escapeHtml(plain)}<rt>${escapeHtml(reading)}</rt></ruby>`;
-    }
-
-    function renderCategories() {
-      categoryList.innerHTML = '';
-      const keyword = searchInput.value.trim().toLowerCase();
-
-      categories.forEach(category => {
-        const hasMatch = !keyword || category.phrases.some(p => {
-          const haystack = [p.plainJa, p.en, ...(p.tags || [])].join(' ').toLowerCase();
-          return haystack.includes(keyword);
-        });
-        if (!hasMatch) return;
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'catBtn' + (selectedCategory === category.id ? ' active' : '');
-        btn.textContent = category.name;
-        btn.addEventListener('click', () => {
-          selectedCategory = category.id;
-          renderCategories();
-          renderPhrases();
-        });
-        categoryList.appendChild(btn);
-      });
-    }
-
-    function renderPhrases() {
-      const category = categories.find(c => c.id === selectedCategory);
-      if (!category) return;
-      currentCategoryNote.textContent = category.note;
-      phraseGrid.innerHTML = '';
-
-      const keyword = searchInput.value.trim().toLowerCase();
-      const phrases = category.phrases.filter(p => {
-        if (!keyword) return true;
-        const haystack = [p.plainJa, p.en, ...(p.tags || [])].join(' ').toLowerCase();
-        return haystack.includes(keyword);
-      });
-
-      if (!phrases.length) {
-        phraseGrid.innerHTML = '<div class="empty">このカテゴリーでは検索に一致する文がありません。</div>';
+    function savePdf() {
+      const text = escapeHtml(outputText.value || 'まだ えらばれて いません。').replaceAll('\n', '<br>');
+      const popup = window.open('', '_blank', 'noopener,noreferrer');
+      if (!popup) {
+        setStatus('PDFよう の 画面を ひらけませんでした。');
         return;
       }
-
-      phrases.forEach(phrase => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'phraseBtn';
-        btn.innerHTML = `${phrase.rubyJa}<small>${escapeHtml(phrase.en)}</small>`;
-        btn.addEventListener('click', () => showPhrase(phrase, category.name));
-        phraseGrid.appendChild(btn);
-      });
+      popup.document.write(`<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PDF保存</title>
+<style>
+body { font-family: "Hiragino Sans", "Yu Gothic", sans-serif; margin: 0; padding: 24px; background: #fff; color: #111; }
+.sheet { max-width: 720px; margin: 0 auto; border: 2px solid #111; border-radius: 18px; padding: 24px; }
+h1 { font-size: 28px; margin: 0 0 12px; }
+p { font-size: 22px; line-height: 1.8; margin: 0; }
+.note { font-size: 15px; color: #555; margin-top: 18px; }
+@media print { body { padding: 0; } .sheet { border: none; } .note { display: none; } }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <h1>かんたん きもちカード</h1>
+    <p>${text}</p>
+    <p class="note">この画面で印刷を開き、PDFとして保存してください。</p>
+  </div>
+  <script>window.onload = () => setTimeout(() => window.print(), 150);<\/script>
+</body>
+</html>`);
+      popup.document.close();
+      setStatus('PDFよう の 画面を ひらきました。');
     }
 
-    function renderDisplay(phrase, sourceLabel = '') {
-      if (!phrase) {
-        displayContent.className = 'empty';
-        displayContent.innerHTML = '左や下の文を選ぶと、ここに大きく表示されます。<br>わからないときに備えて、短く、具体的で、ひとつずつ伝える設計です。';
-        return;
-      }
+    renderChoices('emotionChoices', DATA.emotion, 'emotion');
+    renderChoices('problemChoices', DATA.problem, 'problem');
+    renderChoices('supportChoices', DATA.support, 'support');
 
-      const tagsHtml = (phrase.tags || []).map(tag => `<span class="metaTag">${escapeHtml(tag)}</span>`).join('');
-      const enHtml = displayLang === 'ja' ? '' : `<p class="displayEn">${escapeHtml(phrase.en || '')}</p>`;
-      displayContent.className = '';
-      displayContent.innerHTML = `
-        <p class="displayMain">${phrase.rubyJa}</p>
-        ${enHtml}
-        <div class="displayMeta">
-          ${sourceLabel ? `<span class="metaTag">${escapeHtml(sourceLabel)}</span>` : ''}
-          ${tagsHtml}
-        </div>
-      `;
-    }
-
-    function showPhrase(phrase, sourceLabel) {
-      renderDisplay(phrase, sourceLabel);
-      const key = `${phrase.plainJa}__${phrase.en}`;
-      history = history.filter(item => item.key !== key);
-      history.unshift({ key, phrase, sourceLabel });
-      history = history.slice(0, 10);
-      renderHistory();
-    }
-
-    function renderHistory() {
-      historyList.innerHTML = '';
-      if (!history.length) {
-        historyList.innerHTML = '<div class="empty">まだありません。</div>';
-        return;
-      }
-
-      history.forEach(item => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'historyItem';
-        btn.innerHTML = `${item.phrase.rubyJa}<span class="mini">${escapeHtml(item.sourceLabel || '最近使った文')}</span>`;
-        btn.addEventListener('click', () => renderDisplay(item.phrase, item.sourceLabel));
-        historyList.appendChild(btn);
-      });
-    }
-
-    function renderQuickActions() {
-      quickActions.innerHTML = '';
-      quickPhrases.forEach(phrase => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'chip';
-        btn.innerHTML = phrase.rubyJa;
-        btn.addEventListener('click', () => showPhrase(phrase, 'よく使う補助文'));
-        quickActions.appendChild(btn);
-      });
-    }
-
-    function bindChips() {
-      document.querySelectorAll('[data-size]').forEach(chip => {
-        chip.addEventListener('click', () => {
-          document.querySelectorAll('[data-size]').forEach(x => x.classList.remove('active'));
-          chip.classList.add('active');
-          const value = chip.dataset.size;
-          if (value === 'normal') {
-            document.documentElement.style.setProperty('--display-size', 'clamp(1.55rem, 3vw, 2.5rem)');
-            document.documentElement.style.setProperty('--display-size-en', 'clamp(1rem, 1.6vw, 1.3rem)');
-          } else if (value === 'large') {
-            document.documentElement.style.setProperty('--display-size', 'clamp(2rem, 4vw, 3.2rem)');
-            document.documentElement.style.setProperty('--display-size-en', 'clamp(1.1rem, 1.9vw, 1.45rem)');
-          } else {
-            document.documentElement.style.setProperty('--display-size', 'clamp(2.4rem, 5vw, 4rem)');
-            document.documentElement.style.setProperty('--display-size-en', 'clamp(1.2rem, 2.2vw, 1.65rem)');
-          }
-        });
-      });
-
-      document.querySelectorAll('[data-lang]').forEach(chip => {
-        chip.addEventListener('click', () => {
-          document.querySelectorAll('[data-lang]').forEach(x => x.classList.remove('active'));
-          chip.classList.add('active');
-          displayLang = chip.dataset.lang;
-          if (history[0]) renderDisplay(history[0].phrase, history[0].sourceLabel);
-          else renderDisplay(null);
-        });
-      });
-    }
-
-    toggleThemeBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      saveTheme();
-    });
-
-    fullscreenBtn.addEventListener('click', async () => {
-      const target = document.querySelector('.displayCard');
-      if (!document.fullscreenElement) {
-        await target.requestFullscreen?.();
-      } else {
-        await document.exitFullscreen?.();
-      }
-    });
-
-    copyBtn.addEventListener('click', async () => {
-      const current = history[0]?.phrase;
-      if (!current) return;
-      const text = displayLang === 'ja'
-        ? current.plainJa
-        : `${current.plainJa}\n${current.en || ''}`.trim();
-      try {
-        await navigator.clipboard.writeText(text);
-        copyBtn.textContent = 'コピーしました';
-        setTimeout(() => (copyBtn.textContent = '表示文をコピー'), 1200);
-      } catch {
-        copyBtn.textContent = 'コピー失敗';
-        setTimeout(() => (copyBtn.textContent = '表示文をコピー'), 1200);
-      }
-    });
-
-    clearBtn.addEventListener('click', () => renderDisplay(null));
-
-    searchInput.addEventListener('input', () => {
-      renderCategories();
-      renderPhrases();
-    });
-
-    showCustomBtn.addEventListener('click', () => {
-      const ja = customJa.value.trim();
-      if (!ja) return;
-      const phrase = {
-        plainJa: ja,
-        rubyJa: plainToRuby(ja, customFuri.value.trim()),
-        en: customEn.value.trim(),
-        tags: ['自由入力']
-      };
-      showPhrase(phrase, '自由入力');
-    });
-
-    renderCategories();
-    renderPhrases();
-    renderQuickActions();
-    renderHistory();
-    bindChips();
-    renderDisplay(null);
+    form.addEventListener('change', updateOutput);
+    document.getElementById('copyBtn').addEventListener('click', copyOutput);
+    document.getElementById('pdfBtn').addEventListener('click', savePdf);
+    document.getElementById('resetBtn').addEventListener('click', () => resetForm(true));
+    window.addEventListener('pageshow', () => resetForm(false));
   </script>
 </body>
 </html>
