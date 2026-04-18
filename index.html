@@ -44,20 +44,8 @@
       <section class="panel">
         <h2>みせる <ruby>文章<rt>ぶんしょう</rt></ruby></h2>
         <p class="hint"><ruby>選<rt>えら</rt></ruby>ぶと <ruby>自動<rt>じどう</rt></ruby>で <ruby>文章<rt>ぶんしょう</rt></ruby>が できます。</p>
-        <p class="hint subhint"><ruby>自分<rt>じぶん</rt></ruby>の <ruby>言<rt>い</rt></ruby>いたいことを <ruby>下<rt>した</rt></ruby>に <ruby>文字<rt>もじ</rt></ruby>や <ruby>絵<rt>え</rt></ruby>で <ruby>書<rt>か</rt></ruby>いてね。</p>
-        <textarea id="outputText" rows="6" aria-label="作成された文章"></textarea>
-      </section>
-
-      <section class="panel">
-        <h2><ruby>自由<rt>じゆう</rt></ruby>に <ruby>書<rt>か</rt></ruby>く</h2>
-        <label class="field-label" for="noteText"><ruby>文字<rt>もじ</rt></ruby>で <ruby>書<rt>か</rt></ruby>く</label>
-        <textarea id="noteText" rows="4" placeholder="ここに じぶん の ことば を かいて ください。"></textarea>
-
-        <div class="draw-head">
-          <label class="field-label" for="drawPad"><ruby>絵<rt>え</rt></ruby>で <ruby>書<rt>か</rt></ruby>く</label>
-          <button type="button" id="clearDrawBtn" class="mini-btn"><ruby>絵<rt>え</rt></ruby>を けす</button>
-        </div>
-        <canvas id="drawPad" class="draw-pad" width="900" height="420" aria-label="絵をかく場所"></canvas>
+        <p class="hint subhint"><ruby>他<rt>ほか</rt></ruby>に <ruby>自分<rt>じぶん</rt></ruby>の <ruby>言<rt>い</rt></ruby>いたいことを <ruby>下<rt>した</rt></ruby>に <ruby>文字<rt>もじ</rt></ruby>で <ruby>書<rt>か</rt></ruby>いてね。</p>
+        <textarea id="outputText" rows="7" aria-label="作成された文章"></textarea>
       </section>
 
       <section class="panel">
@@ -76,7 +64,7 @@
         <li>きもちを 1つ <ruby>選<rt>えら</rt></ruby>ぶ</li>
         <li><ruby>困<rt>こま</rt></ruby>っていることを <ruby>選<rt>えら</rt></ruby>ぶ</li>
         <li>してほしいことを <ruby>選<rt>えら</rt></ruby>ぶ</li>
-        <li><ruby>必要<rt>ひつよう</rt></ruby>なら <ruby>文字<rt>もじ</rt></ruby>や <ruby>絵<rt>え</rt></ruby>を <ruby>足<rt>た</rt></ruby>す</li>
+        <li><ruby>必要<rt>ひつよう</rt></ruby>なら みせる <ruby>文章<rt>ぶんしょう</rt></ruby>を <ruby>直<rt>なお</rt></ruby>す</li>
         <li>PDF<ruby>保存<rt>ほぞん</rt></ruby>で まとめを ダウンロードする</li>
       </ol>
     </section>
@@ -102,34 +90,29 @@
 
     const DATA = {
       emotion: [
-        { id: 'calm', value: 'おちついている', html: 'おちついている', visual: icon.calm },
-        { id: 'sad', value: 'かなしい', html: 'かなしい', visual: icon.sad },
-        { id: 'angry', value: 'いらいら', html: 'いらいら', visual: icon.angry },
-        { id: 'confused', value: 'こまっている', html: 'こまっている', visual: icon.confused }
+        { id: 'calm', value: 'おちついている', html: 'おちついている', kanji: '落ち着いている', visual: icon.calm },
+        { id: 'sad', value: 'かなしい', html: 'かなしい', kanji: '悲しい', visual: icon.sad },
+        { id: 'angry', value: 'いらいら', html: 'いらいら', kanji: 'いらいらしている', visual: icon.angry },
+        { id: 'confused', value: 'こまっている', html: 'こまっている', kanji: '困っている', visual: icon.confused }
       ],
       problem: [
-        { id: 'noise', value: 'おと が つらい', html: '<ruby>音<rt>おと</rt></ruby>が つらい', visual: icon.noise },
-        { id: 'light', value: 'ひかり が つらい', html: '<ruby>光<rt>ひかり</rt></ruby>が つらい', visual: icon.light },
-        { id: 'crowd', value: 'ひと が おおい', html: '<ruby>人<rt>ひと</rt></ruby>が おおい', visual: icon.crowd },
-        { id: 'schedule', value: 'よてい が わからない', html: '<ruby>予定<rt>よてい</rt></ruby>が わからない', visual: icon.schedule }
+        { id: 'noise', value: 'おと が つらい', html: '<ruby>音<rt>おと</rt></ruby>が つらい', kanji: '音がつらい', visual: icon.noise },
+        { id: 'light', value: 'ひかり が つらい', html: '<ruby>光<rt>ひかり</rt></ruby>が つらい', kanji: '光がつらい', visual: icon.light },
+        { id: 'crowd', value: 'ひと が おおい', html: '<ruby>人<rt>ひと</rt></ruby>が おおい', kanji: '人が多い', visual: icon.crowd },
+        { id: 'schedule', value: 'よてい が わからない', html: '<ruby>予定<rt>よてい</rt></ruby>が わからない', kanji: '予定がわからない', visual: icon.schedule }
       ],
       support: [
-        { id: 'write', value: 'かいて せつめいして ほしい', html: 'かいて <ruby>説明<rt>せつめい</rt></ruby>して ほしい', visual: icon.write },
-        { id: 'quiet', value: 'しずかな ばしょ に いきたい', html: 'しずかな ばしょに <ruby>行<rt>い</rt></ruby>きたい', visual: icon.quiet },
-        { id: 'wait', value: 'すこし まって ほしい', html: 'すこし <ruby>待<rt>ま</rt></ruby>って ほしい', visual: icon.wait },
-        { id: 'choice', value: 'えらべる かたちで きいて ほしい', html: '<ruby>選<rt>えら</rt></ruby>べる かたちで <ruby>聞<rt>き</rt></ruby>いて ほしい', visual: icon.choice }
+        { id: 'write', value: 'かいて せつめいして ほしい', html: 'かいて <ruby>説明<rt>せつめい</rt></ruby>して ほしい', kanji: '書いて説明してほしい', visual: icon.write },
+        { id: 'quiet', value: 'しずかな ばしょ に いきたい', html: 'しずかな ばしょに <ruby>行<rt>い</rt></ruby>きたい', kanji: '静かな場所に行きたい', visual: icon.quiet },
+        { id: 'wait', value: 'すこし まって ほしい', html: 'すこし <ruby>待<rt>ま</rt></ruby>って ほしい', kanji: '少し待ってほしい', visual: icon.wait },
+        { id: 'choice', value: 'えらべる かたちで きいて ほしい', html: '<ruby>選<rt>えら</rt></ruby>べる かたちで <ruby>聞<rt>き</rt></ruby>いて ほしい', kanji: '選べる形で聞いてほしい', visual: icon.choice }
       ]
     };
 
     const outputText = document.getElementById('outputText');
     const statusText = document.getElementById('status');
     const form = document.getElementById('simpleForm');
-    const noteText = document.getElementById('noteText');
-    const drawPad = document.getElementById('drawPad');
-    const clearDrawBtn = document.getElementById('clearDrawBtn');
     const pdfCapture = document.getElementById('pdfCapture');
-    const drawCtx = drawPad.getContext('2d');
-    let isDrawing = false;
 
     function renderChoices(groupId, items, name, type = 'radio') {
       const root = document.getElementById(groupId);
@@ -151,17 +134,30 @@
       return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el => el.value);
     }
 
+    function getSelectedData(name, key = 'kanji') {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      if (!checked) return '';
+      const item = DATA[name].find(entry => entry.id === checked.dataset.id);
+      return item ? item[key] : '';
+    }
+
+    function getSelectedDataList(name, key = 'kanji') {
+      return [...document.querySelectorAll(`input[name="${name}"]:checked`)]
+        .map(el => DATA[name].find(entry => entry.id === el.dataset.id))
+        .filter(Boolean)
+        .map(item => item[key]);
+    }
+
     function buildMessage() {
       const emotion = getSelected('emotion');
       const problems = getSelectedList('problem');
       const supports = getSelectedList('support');
-      const note = noteText.value.trim();
-
       const parts = [];
+
       if (emotion) parts.push(`いま、${emotion}です。`);
       if (problems.length) parts.push(`こまっていることは、${problems.join('、')}です。`);
       if (supports.length) parts.push(`${supports.join('、')}。`);
-      if (note) parts.push(`つたえたいこと：${note}`);
+
       return parts.join(' ');
     }
 
@@ -173,20 +169,9 @@
       statusText.textContent = message;
     }
 
-    function clearDrawing() {
-      drawCtx.fillStyle = '#ffffff';
-      drawCtx.fillRect(0, 0, drawPad.width, drawPad.height);
-      drawCtx.lineCap = 'round';
-      drawCtx.lineJoin = 'round';
-      drawCtx.strokeStyle = '#111111';
-      drawCtx.lineWidth = 8;
-    }
-
     function resetForm(showStatus = true) {
       form.reset();
       outputText.value = '';
-      noteText.value = '';
-      clearDrawing();
       updateOutput();
       if (showStatus) setStatus('リセットしました。');
       else setStatus('');
@@ -201,73 +186,50 @@
       }
     }
 
-    function getPoint(event) {
-      const rect = drawPad.getBoundingClientRect();
-      const source = event.touches ? event.touches[0] : event;
-      const scaleX = drawPad.width / rect.width;
-      const scaleY = drawPad.height / rect.height;
-      return {
-        x: (source.clientX - rect.left) * scaleX,
-        y: (source.clientY - rect.top) * scaleY
-      };
-    }
-
-    function startDrawing(event) {
-      isDrawing = true;
-      const { x, y } = getPoint(event);
-      drawCtx.beginPath();
-      drawCtx.moveTo(x, y);
-      if (event.cancelable) event.preventDefault();
-    }
-
-    function moveDrawing(event) {
-      if (!isDrawing) return;
-      const { x, y } = getPoint(event);
-      drawCtx.lineTo(x, y);
-      drawCtx.stroke();
-      if (event.cancelable) event.preventDefault();
-    }
-
-    function endDrawing() {
-      isDrawing = false;
-      drawCtx.closePath();
+    function escapeHtml(text) {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
     }
 
     function buildCaptureMarkup() {
-      const emotion = getSelected('emotion') || 'まだ えらんで いません。';
-      const problems = getSelectedList('problem');
-      const supports = getSelectedList('support');
-      const note = noteText.value.trim();
-      const message = outputText.value.trim() || 'まだ ぶんしょう が ありません。';
-      const drawingImage = drawPad.toDataURL('image/png');
+      const emotion = getSelectedData('emotion', 'kanji') || '未選択';
+      const problems = getSelectedDataList('problem', 'kanji');
+      const supports = getSelectedDataList('support', 'kanji');
+      const message = outputText.value.trim() || '未入力';
 
       pdfCapture.innerHTML = `
         <div class="pdf-sheet">
-          <h1>かんたん きもちカード</h1>
-          <div class="pdf-block">
-            <div class="pdf-label">1. いまの きもち</div>
-            <div class="pdf-value">${emotion}</div>
-          </div>
-          <div class="pdf-block">
-            <div class="pdf-label">2. こまっていること</div>
-            <div class="pdf-value">${problems.length ? problems.join('、') : 'まだ えらんで いません。'}</div>
-          </div>
-          <div class="pdf-block">
-            <div class="pdf-label">3. どうしてほしい？</div>
-            <div class="pdf-value">${supports.length ? supports.join('、') : 'まだ えらんで いません。'}</div>
-          </div>
-          <div class="pdf-block">
-            <div class="pdf-label">みせる ぶんしょう</div>
-            <div class="pdf-value big">${message.replaceAll('\n', '<br>')}</div>
-          </div>
-          <div class="pdf-block">
-            <div class="pdf-label">じゆうに かいた ことば</div>
-            <div class="pdf-value">${note || 'まだ かいて いません。'}</div>
-          </div>
-          <div class="pdf-block">
-            <div class="pdf-label">じゆうに かいた え</div>
-            <div class="pdf-drawing-wrap"><img src="${drawingImage}" alt="かいた絵" class="pdf-drawing-image"></div>
-          </div>
+          <h1>簡単気持ちカード</h1>
+          <table class="pdf-table" aria-label="PDF出力用の表">
+            <thead>
+              <tr>
+                <th>項目</th>
+                <th>内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>現在の気持ち</th>
+                <td>${escapeHtml(emotion)}</td>
+              </tr>
+              <tr>
+                <th>困っていること</th>
+                <td>${escapeHtml(problems.length ? problems.join('、') : '未選択')}</td>
+              </tr>
+              <tr>
+                <th>してほしいこと</th>
+                <td>${escapeHtml(supports.length ? supports.join('、') : '未選択')}</td>
+              </tr>
+              <tr>
+                <th>相手に見せる文章</th>
+                <td>${escapeHtml(message).replaceAll('\n', '<br>')}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       `;
     }
@@ -284,11 +246,13 @@
         setStatus('PDFを つくっています。');
         buildCaptureMarkup();
         pdfCapture.classList.add('is-open');
+
         const canvas = await html2canvas(pdfCapture.firstElementChild, {
           backgroundColor: '#ffffff',
           scale: 2,
           useCORS: true
         });
+
         pdfCapture.classList.remove('is-open');
 
         const { jsPDF } = window.jspdf;
@@ -304,10 +268,9 @@
           pdf.addImage(imageData, 'PNG', margin, margin, imgWidth, imgHeight, undefined, 'FAST');
         } else {
           let remainingHeight = imgHeight;
-          let position = margin;
           let pageOffset = 0;
           while (remainingHeight > 0) {
-            pdf.addImage(imageData, 'PNG', margin, position - pageOffset, imgWidth, imgHeight, undefined, 'FAST');
+            pdf.addImage(imageData, 'PNG', margin, margin - pageOffset, imgWidth, imgHeight, undefined, 'FAST');
             remainingHeight -= pageHeight - margin * 2;
             pageOffset += pageHeight - margin * 2;
             if (remainingHeight > 0) pdf.addPage();
@@ -329,24 +292,11 @@
     renderChoices('supportChoices', DATA.support, 'support', 'checkbox');
 
     form.addEventListener('change', updateOutput);
-    noteText.addEventListener('input', updateOutput);
-    drawPad.addEventListener('mousedown', startDrawing);
-    drawPad.addEventListener('mousemove', moveDrawing);
-    window.addEventListener('mouseup', endDrawing);
-    drawPad.addEventListener('mouseleave', endDrawing);
-    drawPad.addEventListener('touchstart', startDrawing, { passive: false });
-    drawPad.addEventListener('touchmove', moveDrawing, { passive: false });
-    window.addEventListener('touchend', endDrawing);
-    clearDrawBtn.addEventListener('click', () => {
-      clearDrawing();
-      setStatus('え を けしました。');
-    });
     document.getElementById('copyBtn').addEventListener('click', copyOutput);
     document.getElementById('pdfBtn').addEventListener('click', savePdf);
     document.getElementById('resetBtn').addEventListener('click', () => resetForm(true));
     window.addEventListener('pageshow', () => resetForm(false));
 
-    clearDrawing();
     updateOutput();
   </script>
 </body>
