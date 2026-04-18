@@ -57,6 +57,7 @@ h1, h2 { line-height: 1.25; margin: 0 0 0.65rem; text-wrap: balance; }
 h1 { font-size: clamp(2rem, 1.5rem + 2vw, 3rem); }
 h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); }
 .lead, .hint, .status { color: var(--muted); }
+.subhint { margin-top: 0.35rem; }
 .choice-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -106,7 +107,8 @@ h2 { font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem); }
 }
 .choice-card:focus-within,
 button:focus-visible,
-textarea:focus {
+textarea:focus,
+canvas:focus {
   outline: 4px solid var(--focus);
   outline-offset: 3px;
 }
@@ -120,11 +122,32 @@ textarea {
   color: var(--text);
   resize: vertical;
 }
+.field-label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.draw-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+.draw-pad {
+  width: 100%;
+  min-height: 210px;
+  border: 3px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  touch-action: none;
+  display: block;
+}
 .button-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
-  margin-top: 0.9rem;
 }
 button {
   cursor: pointer;
@@ -135,11 +158,68 @@ button {
   background: var(--panel);
   color: var(--text);
 }
+.mini-btn {
+  padding: 0.55rem 0.9rem;
+  font-size: 0.95rem;
+}
 button:hover { background: var(--panel-2); }
 button:active { transform: translateY(1px); }
 .steps { padding-left: 1.5rem; }
 .small { font-size: 0.98rem; }
 ruby rt { font-size: 0.58em; }
+.pdf-capture {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 794px;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.pdf-capture.is-open {
+  left: 0;
+  opacity: 1;
+}
+.pdf-sheet {
+  width: 794px;
+  min-height: 1123px;
+  padding: 32px;
+  background: #ffffff;
+  color: #111111;
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+}
+.pdf-sheet h1 {
+  font-size: 28px;
+  margin: 0 0 18px;
+}
+.pdf-block {
+  border: 2px solid #111111;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.pdf-label {
+  font-weight: 800;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.pdf-value {
+  font-size: 20px;
+  line-height: 1.7;
+}
+.pdf-value.big {
+  min-height: 100px;
+}
+.pdf-drawing-wrap {
+  border: 2px solid #111111;
+  border-radius: 14px;
+  padding: 8px;
+  background: #ffffff;
+}
+.pdf-drawing-image {
+  width: 100%;
+  display: block;
+}
 
 @media (max-width: 760px) {
   .choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -151,6 +231,7 @@ ruby rt { font-size: 0.58em; }
   .choice-grid { grid-template-columns: 1fr; }
   .choice-card { min-height: 150px; }
   .button-row > * { flex: 1 1 100%; }
+  .draw-head { flex-direction: column; align-items: stretch; }
 }
 
 @media print {
